@@ -16,12 +16,30 @@ const authenticatedUser = (username, password) => {
   );
 };
 
+
 regd_users.post('/login', (req, res) => {
   const { username, password } = req.body;
 
   if (!authenticatedUser(username, password)) {
-    return res.status(401).json({ message: 'Invalid username or password' });
+    return res.status(401).json({
+      message: 'Invalid username or password'
+    });
   }
+
+  req.session.username = username;
+
+  const token = jwt.sign(
+    { username },
+    'fingerprint_customer',
+    { expiresIn: '1h' }
+  );
+
+  return res.status(200).json({
+    message: 'Login successful',
+    token
+  });
+});
+
 
   const token = jwt.sign({ username }, 'fingerprint_customer', {
     expiresIn: '1h'
